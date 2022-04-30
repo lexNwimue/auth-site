@@ -2,7 +2,7 @@
   "name": "markdown-blog",
   "type": "module",
   "version": "1.0.0",
-  "description": "A blog that allows users write articles using markdown",
+  "description": "A basic user authentication site",
   "main": "server.js",
   "scripts": {
     "devStart": "nodemon server.js",
@@ -10,12 +10,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "github.com/lexNwimue/markdown-blog"
+    "url": "github.com/lexNwimue/user-authentication"
   },
   "keywords": [
-    "blog",
-    "markdown",
-    "article"
+    "auth",
+    "authentication"
   ],
   "author": "lex Nwimue Progress",
   "license": "ISC",
@@ -24,6 +23,7 @@
     "dompurify": "^2.3.6",
     "ejs": "^3.1.7",
     "express": "^4.18.0",
+    "formidable": "^2.0.1",
     "jsdom": "^19.0.0",
     "marked": "^4.0.14",
     "method-override": "^3.0.0",
