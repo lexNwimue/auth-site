@@ -3,12 +3,13 @@ import ejs from "ejs";
 import formidable from 'formidable';
 import fs from 'fs';
 import mongoose from 'mongoose'
+import dotenv from 'dotenv';
 import cookieParser from "cookie-parser";
 import userModel from "./model/userModel.mjs";
-
 import  jwt from "jsonwebtoken";
 import validate from './validate.mjs';
 
+dotenv.config();
 const app = express();
 
 app.set("view engine", "ejs");
@@ -16,20 +17,25 @@ app.use(express.static("views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Connect to MongoDB
+
+
+
+const uri = "mongodb+srv://lexNwimue:Kaycee<3@cluster0.bmtc1.mongodb.net/auth_db?retryWrites=true&w=majority";
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(result => {
+        app.listen(process.env.PORT || 5000);
+        console.log("Ready...");
+    })
+    .catch(err => console.log(err));
+
+
 const expiration = 3 * 24 * 60 * 60;
 const createToken = (id) => {
   return jwt.sign({id}, 'My little secret', {
     expiresIn:  expiration// token is valid for three days
   })
 }
-
-const mongodb = 'mongodb://localhost/auth-site-db';
-mongoose.connect(mongodb, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(result => {
-        app.listen(5000);
-        console.log("Ready...");
-    })
-    .catch(err => console.log(err));
 
 app.get("/", (req, res) => {
   res.status(200).render("index", {title: 'AuthSite'});
@@ -65,8 +71,9 @@ app.post('/signup', async (req, res) => {
       const token = createToken(user.email);
       res.cookie('jwt', token, {httpOnly: true, maxAge: expiration * 1000}) // maxAge is in milliseconds
       res.redirect(301, '/dashboard');
+    } else{
+      res.redirect(301, '/signup'); // If not user i.e. signup didnt succeed
     }
-    res.redirect(301, '/signup'); // If not user i.e. signup didnt succeed
   })
   } catch(err){
     console.log(err);

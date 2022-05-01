@@ -53,17 +53,7 @@ const validateLogin = async (user) => {
 
 const validateEdit = async (user) => {
     try{
-        let res = await userModel.User.findOne({username: user.username}); // Confirm new username uniqueness
-        if(res){
-            return false
-        }
-
-        res = await userModel.User.findOne({username: user.username}); // Confirm new email uniqueness
-        if(await user.password !== user.password2 || user.password.length < 6){ // Confirm password matchy
-            return false;
-        }
-        
-        res = await userModel.User.updateOne({email: currentUser.email}, {$set: user}); //Update user document
+        const res = await userModel.User.updateOne({email: currentUser.email}, {$set: user}); //Update user document
         console.log('Updating profile... ', res);
         return res;
     } catch (err){
