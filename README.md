@@ -41,7 +41,7 @@ A basic authentication website where users can signup, login, view, and edit the
 ![register](https://user-images.githubusercontent.com/30748446/166144744-c5ae0079-2d09-418f-b0a2-07b9ed9d2353.PNG)
 
 
-Introduce your projects by taking a screenshot, video recordings or a gif. Try to tell us about the solution you built by answering the following:
+Try to tell us about the solution you built by answering the following:
 
 - Where can I see your demo?
 - What was your experience building it.
