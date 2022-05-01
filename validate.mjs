@@ -1,28 +1,23 @@
 
 import userModel from './model/userModel.mjs';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
+let currentUser;
 // Validate sign up form data
 const validateSignup = async (user) => {
     try{
-        let errors = {};
         let res = await userModel.User.findOne({username: user.username}); // Confirm username uniqueness
-        if(await res){
-            errors.usernameErr = 'Username already exists';
-            console.log(errors.usernameErr);
+        if(res){
             return false
         }
 
         res = await userModel.User.findOne({email: user.email}); // Confirm email uniqueness
         if(await res){
-            errors.emailErr = 'Email already exists';
-            console.log(errors.emailErr);
             return false;
         }
         
         if(await user.password !== user.password2 || user.password.length < 6){ // Confirm password match
-            errors.passwordErr = 'Passwords do not match';
-            console.log(errors.passwordErr);
             return false;
         }
         
@@ -37,10 +32,10 @@ const validateSignup = async (user) => {
     }
 }
 
+// Validate login form data
 const validateLogin = async (user) => {
     try{
         let res = await userModel.User.findOne({email: user.email}); // Find existing user
-        // console.log(user.email, res.email);
         if(res){
             const auth = bcrypt.compare(res.password, user.password);
             if(auth){
@@ -56,7 +51,73 @@ const validateLogin = async (user) => {
     }
 }
 
+const validateEdit = async (user) => {
+    try{
+        let res = await userModel.User.findOne({username: user.username}); // Confirm new username uniqueness
+        if(res){
+            return false
+        }
+
+        res = await userModel.User.findOne({username: user.username}); // Confirm new email uniqueness
+        if(await user.password !== user.password2 || user.password.length < 6){ // Confirm password matchy
+            return false;
+        }
+        
+        res = await userModel.User.updateOne({email: currentUser.email}, {$set: user}); //Update user document
+        console.log('Updating profile... ', res);
+        return res;
+    } catch (err){
+        console.log(err);
+    }
+}
+
+// Middleware for protecting routes
+const requireAuth = (req, res, next) => {
+    const token = req.cookies.jwt;
+        
+    if(token){
+        jwt.verify(token, 'My little secret', (err, decodedToken) => {
+            if(err){
+                console.log(err.message);
+                res.redirect('/login');
+            } else{
+                next();
+            }
+        })
+    } else{
+        res.redirect('/login');
+    }
+}
+
+// Get current user
+const getCurrentUser = async (req, res, next) => {
+    const token = req.cookies.jwt;        
+    if(token){
+        jwt.verify(token, 'My little secret', async (err, decodedToken) => {
+            if(err){
+                console.log(err.message);
+                res.locals.user = null
+                next();
+            } else{
+                let user = await userModel.User.findOne({email: decodedToken.id});
+                res.locals.user = user;
+                currentUser = user;
+                next();
+                return currentUser;
+            }
+        })
+    } else{
+        res.locals.user = null;
+        next();
+    }
+}
+
+
 export default {
+    currentUser,
     validateSignup, 
     validateLogin,
+    validateEdit,
+    requireAuth,
+    getCurrentUser
 }

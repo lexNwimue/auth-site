@@ -4,9 +4,9 @@ import formidable from 'formidable';
 import fs from 'fs';
 import mongoose from 'mongoose'
 import cookieParser from "cookie-parser";
+import userModel from "./model/userModel.mjs";
 
 import  jwt from "jsonwebtoken";
-import { requireAuth } from "./requireAuth.mjs";
 import validate from './validate.mjs';
 
 const app = express();
@@ -41,13 +41,11 @@ app.get("/signup", (req, res) => {
 
 app.post('/signup', async (req, res) => {
   try{
-  const uploadFolder = "C:\\Users\\Azula\\Documents\\Code\\auth-site\\views\\uploads\\";
-  const form = new formidable.IncomingForm();
-  form.maxFileSize = 50 * 1024 * 1024; //5MB
-  form.uploadDir = uploadFolder; // Set image upload directory
+  const uploadFolder = "uploads\\";
+  const form = await new formidable.IncomingForm();
   
   form.parse(req, async(err, fields, file) => {
-    
+    console.log(fields, file);
     // Check if uploaded file is an image
     if( file.profilePhoto.mimetype !== 'image/png' || 
         file.profilePhoto.mimetype !== 'image/jpg' || 
@@ -55,11 +53,9 @@ app.post('/signup', async (req, res) => {
       ) {
         console.log('Invalid file type');
     }
-    
+    form.uploadDir = uploadFolder; // Set image upload directory
     // Get file extension
     let fileExt = [...file.profilePhoto.mimetype]; // Convert string to array
-    // console.log(fileExt);
-    // console.log(fileExt.lastIndexOf('/'));
     fileExt = '.' + fileExt.slice(6).join('');
     fs.rename(file.profilePhoto.filepath, uploadFolder + fields.username + fileExt, () => {
       fields.profilePhoto = uploadFolder + fields.username + fileExt;
@@ -89,8 +85,6 @@ app.post("/login", async (req, res) => {
     password
   };
 
-  console.log(user);
-
   user = await validate.validateLogin(user);
   if(user){
     const token = createToken(user.email);
@@ -102,12 +96,53 @@ app.post("/login", async (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
+
+  // Code to handle setting last login data
+  const token = req.cookies.jwt;        
+    if(token){
+        jwt.verify(token, 'My little secret', async (err, decodedToken) => {
+            if(err){
+                console.log(err.message);
+                res.locals.user = null
+                next();
+            } else{
+               let user = await userModel.User.findOne({email: decodedToken.id});
+               
+               //Update login date data    
+               const loginData = await userModel.User.updateOne({email: user.email}, 
+               {$set: {lastLogin: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString()}}); 
+            }
+        })
+    }
+  res.cookie('jwt', '', {maxAge: 1}); // Replace jwt token with empty string
   res.redirect(302, '/');
 });
 
-app.get('/dashboard', requireAuth, (req, res) => {
-
+app.get('/dashboard', validate.requireAuth, validate.getCurrentUser, (req, res) => {
   res.render('dashboard', {title: 'User Dashboard'});
+});
+
+app.post('/edit-profile', validate.requireAuth, validate.getCurrentUser, (req, res) => {
+  try{
+    const uploadFolder = "uploads\\";
+    const form = new formidable.IncomingForm();
+    
+    form.parse(req, async(err, fields, file) => {
+      form.uploadDir = uploadFolder; // Set image upload directory
+      // Get file extension
+      let fileExt = [...file.profilePhoto.mimetype]; // Convert string to array
+      fileExt = '.' + fileExt.slice(6).join('');
+
+      // Save file with username
+      fs.rename(file.profilePhoto.filepath, uploadFolder + fields.username + fileExt, () => { 
+        fields.profilePhoto = uploadFolder + fields.username + fileExt;
+      });
+      const user = await validate.validateEdit(fields);
+      res.redirect(301, '/dashboard');
+    })
+    } catch(err){
+      console.log(err);
+    }
 });
 
 app.get("*", (req, res) => {

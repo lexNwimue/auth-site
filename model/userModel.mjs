@@ -43,6 +43,15 @@ const userSchema = new Schema({
     profilePhoto: {
         type: String,
         required: true
+    }, 
+    bio: {
+        type: String,
+        required: true
+    },
+    lastLogin: {
+        type: Date,
+        required: true,
+        default: new Date(),
     }
 }, { timestamps: true });
 
