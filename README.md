@@ -38,7 +38,6 @@ A basic authentication website where users can signup, login, view, and edit the
 
 ## Overview
 
-![screenshot](https://user-images.githubusercontent.com/16707738/92399059-5716eb00-f132-11ea-8b14-bcacdc8ec97b.png)
 ![register](https://user-images.githubusercontent.com/30748446/166144744-c5ae0079-2d09-418f-b0a2-07b9ed9d2353.PNG)
 
 
