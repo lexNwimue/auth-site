@@ -67,7 +67,7 @@ app.post('/signup', async (req, res) => {
 
       // Check file validity
       const fileExt = file.profilePhoto.mimetype.split("/").pop();
-      const validTypes = ["jpg", "jpeg", "png", "pdf"];
+      const validTypes = ["jpg", "jpeg", "png", "gif"];
       if (validTypes.indexOf(fileExt) === -1) { // Check if the type is not listed in the validTypes array
         throw Error('Wrong file type selected');
       }
@@ -88,7 +88,7 @@ app.post('/signup', async (req, res) => {
   });
 } catch(err){
       console.log(err);
-    }
+}
 });
 
 app.get("/login", (req, res) => {
@@ -141,42 +141,44 @@ app.get('/dashboard', validate.requireAuth, validate.getCurrentUser, (req, res) 
 
 app.post('/edit-profile', validate.requireAuth, validate.getCurrentUser, async (req, res) => {
   try{
+
     const form = new formidable.IncomingForm();
-
-    form.parse(req, async(err, fields, file) => {
-      const uploadFolder = "uploads/";
-      console.log('uploadFolder', uploadFolder);
-
-      form.uploadDir = uploadFolder; // Set image upload directory
-      console.log('uploadDir', uploadDir);
-      console.log('Original file path: ', file.profilePhoto.filepath);
-
-      if( file.profilePhoto.mimetype !== 'image/png' || 
-        file.profilePhoto.mimetype !== 'image/jpg' || 
-        file.profilePhoto.mimetype !== 'image/jpeg'
-      ) {
-        console.log('Invalid file type');
-      }
-      
-      // Get file extension
-      let fileExt = [...file.profilePhoto.mimetype]; // Convert string to array
-      fileExt = '.' + fileExt.slice(6).join('');
-      file.profilePhoto.filepath = uploadFolder + fields.username + fileExt;
-      console.log('New File Path ', file.profilePhoto.filepath);
-      console.log('mimetype', file.profilePhoto.mimetype);
+    const uploadFolder = path.join(__dirname, "/views/uploads/");
+    console.log(uploadFolder);
+    form.options.maxFileSize = 50 * 1024 * 1024; // 5MB
+    form.options.uploadDir = uploadFolder; // Set the upload dir to our custom dir
     
-    const user = await validate.validateSignup(fields);
-    if (user){
+    form.parse(req, async (err, fields, file) => {
+      if(err){
+        console.log('Error parsing the file: ', err);
+      }
+      console.log(fields);
+      console.log(file);
+
+      // Check file validity
+      const fileExt = file.profilePhoto.mimetype.split("/").pop();
+      const validTypes = ["jpg", "jpeg", "png", "gif"];
+      if (validTypes.indexOf(fileExt) === -1) { // Check if the type is not listed in the validTypes array
+        throw Error('Wrong file type selected');
+      }
+
+      fields.profilePhoto = path.join('./uploads/', fields.username + '.' + fileExt); // Store file path as field in MongoDB
+      fs.rename(file.profilePhoto.filepath, uploadFolder + fields.username + '.' + fileExt, async (err) => {
+        if(err) console.log(err);
+      });
+      
+      const user = await validate.validateEdit(fields);
+      if (user){
       const token = createToken(user.email);
       res.cookie('jwt', token, {httpOnly: true, maxAge: expiration * 1000}) // maxAge is in milliseconds
       res.redirect(301, '/dashboard');
     } else{
       res.redirect(301, '/signup'); // If not user i.e. signup didnt succeed
-    }
-  })
-  } catch(err){
-    console.log(err);
-  }
+    } 
+  });
+} catch(err){
+      console.log(err);
+}
 });
 
 app.get("*", (req, res) => {
