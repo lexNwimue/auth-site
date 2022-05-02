@@ -27,7 +27,7 @@ app.use(cookieParser());
 const uri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.bmtc1.mongodb.net/auth_db?retryWrites=true&w=majority`;
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(result => {
-        app.listen(process.env.PORT || 5000);
+        app.listen(process.env.PORT || 80);
         console.log("Ready...");
     })
     .catch(err => console.log(err));
