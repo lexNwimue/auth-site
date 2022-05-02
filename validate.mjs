@@ -9,15 +9,17 @@ const validateSignup = async (user) => {
     try{
         let res = await userModel.User.findOne({username: user.username}); // Confirm username uniqueness
         if(res){
+            console.log('Username already exists')
             return false
         }
-
         res = await userModel.User.findOne({email: user.email}); // Confirm email uniqueness
-        if(await res){
+        if(res){
+            console.log('Email already exists')
             return false;
         }
         
         if(await user.password !== user.password2 || user.password.length < 6){ // Confirm password match
+            console.log('Passwords do not match');
             return false;
         }
         
@@ -25,7 +27,6 @@ const validateSignup = async (user) => {
         const salt = await bcrypt.genSalt(); // Generate salt
         newUser.password = await bcrypt.hash(newUser.password, salt); // hash password
         const result = await newUser.save();
-        
         if(result) return result;
     } catch (err){
         console.log(err)
