@@ -68,7 +68,7 @@ app.post('/signup', async (req, res) => {
         throw Error('Wrong file type selected');
       }
 
-      fields.profilePhoto = path.join('./uploads/', fields.username + '.' + fileExt); // Store file path as field in MongoDB
+      fields.profilePhoto = './uploads/' + fields.username + '.' + fileExt; // Store file path as field in MongoDB
       fs.rename(file.profilePhoto.filepath, uploadFolder + fields.username + '.' + fileExt, async (err) => {
         if(err) console.log(err);
       });
