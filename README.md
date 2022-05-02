@@ -1,4 +1,4 @@
-# auth-site
+# lex-auth-site
 A basic authentication website where users can signup, login, view, and edit their profile
 
 <h1 align="center">auth-site</h1>
