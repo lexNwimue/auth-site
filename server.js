@@ -25,6 +25,7 @@ app.use(cookieParser());
 // Connect to MongoDB
 
 const uri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.bmtc1.mongodb.net/auth_db?retryWrites=true&w=majority`;
+// const uri = 'mongodb://localhost/auth-site-db';
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(result => {
         app.listen(process.env.PORT || 80);
@@ -63,7 +64,7 @@ app.post('/signup', async (req, res) => {
 
       // Check file validity
       const fileExt = file.profilePhoto.mimetype.split("/").pop();
-      const validTypes = ["jpg", "jpeg", "png", "gif"];
+      const validTypes = ["jpg", "jpeg", "png", "gif", "svg"];
       if (validTypes.indexOf(fileExt) === -1) { // Check if the type is not listed in the validTypes array
         throw Error('Wrong file type selected');
       }
@@ -77,7 +78,7 @@ app.post('/signup', async (req, res) => {
       if (user){
       const token = createToken(user.email);
       res.cookie('jwt', token, {httpOnly: true, maxAge: expiration * 1000}) // maxAge is in milliseconds
-      res.render('dashboard');
+      res.render('dashboard', {title: 'User Dashboard', user});
     } else{
       res.redirect(301, '/signup'); // If not user i.e. signup didnt succeed
     } 
@@ -167,7 +168,7 @@ app.post('/edit-profile', validate.requireAuth, validate.getCurrentUser, async (
       if (user){
       const token = createToken(user.email);
       res.cookie('jwt', token, {httpOnly: true, maxAge: expiration * 1000}) // maxAge is in milliseconds
-      res.redirect('/dashboard', {title: 'User Dashboard', user});
+      res.render('dashboard', {title: 'User Dashboard', user});
     } else{
       res.redirect(301, '/signup'); // If not user i.e. signup didnt succeed
     } 
