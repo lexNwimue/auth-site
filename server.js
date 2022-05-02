@@ -24,8 +24,8 @@ app.use(cookieParser());
 
 // Connect to MongoDB
 
-const uri = "mongodb+srv://lexNwimue:Kaycee<3@cluster0.bmtc1.mongodb.net/auth_db?retryWrites=true&w=majority";
-// const uri = 'mongodb://localhost/auth-site-db';
+// const uri = "mongodb+srv://lexNwimue:Kaycee<3@cluster0.bmtc1.mongodb.net/auth_db?retryWrites=true&w=majority";
+const uri = 'mongodb://localhost/auth-site-db';
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(result => {
         app.listen(process.env.PORT || 5000);
@@ -51,7 +51,6 @@ app.get("/signup", (req, res) => {
 
 app.post('/signup', async (req, res) => {
   try{
-
     const form = new formidable.IncomingForm();
     const uploadFolder = path.join(__dirname, "/views/uploads/");
     console.log(uploadFolder);
@@ -62,8 +61,6 @@ app.post('/signup', async (req, res) => {
       if(err){
         console.log('Error parsing the file: ', err);
       }
-      console.log(fields);
-      console.log(file);
 
       // Check file validity
       const fileExt = file.profilePhoto.mimetype.split("/").pop();
@@ -81,7 +78,7 @@ app.post('/signup', async (req, res) => {
       if (user){
       const token = createToken(user.email);
       res.cookie('jwt', token, {httpOnly: true, maxAge: expiration * 1000}) // maxAge is in milliseconds
-      res.redirect(301, '/dashboard');
+      res.render('/dashboard');
     } else{
       res.redirect(301, '/signup'); // If not user i.e. signup didnt succeed
     } 
@@ -171,7 +168,7 @@ app.post('/edit-profile', validate.requireAuth, validate.getCurrentUser, async (
       if (user){
       const token = createToken(user.email);
       res.cookie('jwt', token, {httpOnly: true, maxAge: expiration * 1000}) // maxAge is in milliseconds
-      res.redirect(301, '/dashboard');
+      res.redirect('/dashboard', {title: 'User Dashboard', user});
     } else{
       res.redirect(301, '/signup'); // If not user i.e. signup didnt succeed
     } 

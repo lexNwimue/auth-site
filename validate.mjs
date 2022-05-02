@@ -55,8 +55,6 @@ const validateLogin = async (user) => {
 const validateEdit = async (user) => {
     try{
         const res = await userModel.User.updateOne({email: currentUser.email}, {$set: user}); //Update user document
-        console.log('Updating profile... ', res);
-        return res;
     } catch (err){
         console.log(err);
     }
