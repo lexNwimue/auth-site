@@ -9,7 +9,7 @@ A basic authentication website where users can signup, login, view, and edit the
 
 <div align="center">
   <h3>
-    <a href="https://{your-demo-link.your-domain}">
+    <a href="https://lex-auth-site.herokuapp.com/">
       Demo
     </a>
     <span> | </span>
