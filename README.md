@@ -9,11 +9,11 @@ A basic authentication website where users can signup, login, view, and edit the
 
 <div align="center">
   <h3>
-    <a href="https://lex-auth-site.herokuapp.com/">
+    <a href="https://files.fm/u/hm9npeqmj">
       Demo
     </a>
     <span> | </span>
-    <a href="https://{your-url-to-the-solution}">
+    <a href="https://lex-auth-site.herokuapp.com/ ">
       Solution
     </a>
     <span> | </span>
