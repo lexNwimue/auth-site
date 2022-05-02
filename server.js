@@ -24,8 +24,8 @@ app.use(cookieParser());
 
 // Connect to MongoDB
 
-const uri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.bmtc1.mongodb.net/auth_db?retryWrites=true&w=majority`;
-// const uri = 'mongodb://localhost/auth-site-db';
+// const uri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.bmtc1.mongodb.net/auth_db?retryWrites=true&w=majority`;
+const uri = 'mongodb://localhost/auth-site-db';
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(result => {
         app.listen(process.env.PORT || 80);
