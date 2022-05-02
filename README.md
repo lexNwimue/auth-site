@@ -40,11 +40,11 @@ A basic authentication website where users can signup, login, view, and edit the
 
 ![register](https://user-images.githubusercontent.com/30748446/166144744-c5ae0079-2d09-418f-b0a2-07b9ed9d2353.PNG)
 
+I expected this app to be an easy breeze through, because I already pictured the entire project structure in my head. I couldn't be any more wrong. It started gracefully until I started running into nasty bugs, especially since this was my first time using the formidable library. I spent days debugging. At some point, I began to think JavaScript was self-aware. Because I'd close my laptop, having written a perfectly working code. Only to wake up to bugs in the morning. It was so annoying but I learned alot on the task. My ability to work under frustration was really tested.
 
-Try to tell us about the solution you built by answering the following:
+You can find the demo videos of the project (including a walkthrough of the back end code, database strucure, deployment process at <a href="https://files.fm/u/hm9npeqmj">Demo</a>. I hope you like it. 
 
-- Where can I see your demo?
-- What was your experience building it.
+
 
 ### Built With
 
