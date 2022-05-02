@@ -78,7 +78,7 @@ app.post('/signup', async (req, res) => {
       if (user){
       const token = createToken(user.email);
       res.cookie('jwt', token, {httpOnly: true, maxAge: expiration * 1000}) // maxAge is in milliseconds
-      res.render('/dashboard');
+      res.render('dashboard');
     } else{
       res.redirect(301, '/signup'); // If not user i.e. signup didnt succeed
     } 
